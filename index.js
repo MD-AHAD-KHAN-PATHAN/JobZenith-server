@@ -54,7 +54,12 @@ async function run() {
       res.send(result);
     })
 
-    
+    app.get('/graphics', async(req, res) => {
+      const query = {jobCategory: "GRAPHICS DESIGN"};
+      const graphics = jobCollection.find(query);
+      const result = await graphics.toArray();
+      res.send(result);
+    })
 
     app.get('/job/:id', async(req, res) => {
       const id = req.params.id;
