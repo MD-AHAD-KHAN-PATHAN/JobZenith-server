@@ -47,6 +47,13 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/digital', async(req, res) => {
+      const query = {jobCategory: "DIGITAL MARKETING"};
+      const digital = jobCollection.find(query);
+      const result = await digital.toArray();
+      res.send(result);
+    })
+
     
 
     app.get('/job/:id', async(req, res) => {
