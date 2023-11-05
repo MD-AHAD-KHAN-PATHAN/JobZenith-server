@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cookieParser = require('cookie-parser');
@@ -28,10 +28,17 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const jobCollection = client.db('jobZenith').collection('job');
 
+    app.post('/job', async(req, res) => {
+      const data = req.body;
+      const result = await jobCollection.insertOne(data);
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
