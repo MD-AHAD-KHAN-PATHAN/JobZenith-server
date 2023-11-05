@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -47,17 +47,12 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/digital', async(req, res) => {
-      const query = {jobCategory: "DIGITAL MARKETING"};
-      const digital = jobCollection.find(query);
-      const result = await digital.toArray();
-      res.send(result);
-    })
+    
 
-    app.get('/graphics', async(req, res) => {
-      const query = {jobCategory: "GRAPHICS DESIGN"};
-      const graphics = jobCollection.find(query);
-      const result = await graphics.toArray();
+    app.get('/job/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await jobCollection.findOne(query);
       res.send(result);
     })
 
