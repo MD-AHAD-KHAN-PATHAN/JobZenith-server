@@ -40,6 +40,27 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/web', async(req, res) => {
+      const query = {jobCategory: "WEB DEVELOPMENT"};
+      const web = jobCollection.find(query);
+      const result = await web.toArray();
+      res.send(result);
+    })
+
+    app.get('/digital', async(req, res) => {
+      const query = {jobCategory: "DIGITAL MARKETING"};
+      const digital = jobCollection.find(query);
+      const result = await digital.toArray();
+      res.send(result);
+    })
+
+    app.get('/graphics', async(req, res) => {
+      const query = {jobCategory: "GRAPHICS DESIGN"};
+      const graphics = jobCollection.find(query);
+      const result = await graphics.toArray();
+      res.send(result);
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
