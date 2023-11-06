@@ -47,6 +47,17 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/mybid', async(req, res) => {
+
+      const query = {};
+      const sellerEmail = req.query.sellerEmail;
+      if(sellerEmail){
+        query.sellerEmail = sellerEmail;
+      }
+      const result = await mybidCollection.find(query).toArray();
+      res.send(result);
+    })
+
     app.get('/job', async(req, res) => {
 
       const query = {};
