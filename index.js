@@ -33,12 +33,31 @@ async function run() {
     await client.connect();
 
     const jobCollection = client.db('jobZenith').collection('job');
+    const mybidCollection = client.db('jobZenith').collection('myBid');
 
     app.post('/job', async(req, res) => {
       const data = req.body;
       const result = await jobCollection.insertOne(data);
       res.send(result);
     })
+
+    app.post('/mybid', async(req, res) => {
+      const data = req.body;
+      const result = await mybidCollection.insertOne(data);
+      res.send(result);
+    })
+
+    app.get('/job', async(req, res) => {
+
+      const query = {};
+      const email = req.query.email;
+      if(email){
+        query.email = email;
+      }
+      const result = await jobCollection.find(query).toArray();
+      res.send(result);
+    })
+
 
     app.get('/web', async(req, res) => {
       const query = {jobCategory: "WEB DEVELOPMENT"};
