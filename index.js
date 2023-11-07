@@ -35,34 +35,71 @@ async function run() {
     const jobCollection = client.db('jobZenith').collection('job');
     const mybidCollection = client.db('jobZenith').collection('myBid');
 
-    app.post('/job', async(req, res) => {
+    app.post('/job', async (req, res) => {
       const data = req.body;
       const result = await jobCollection.insertOne(data);
       res.send(result);
     })
 
-    app.post('/mybid', async(req, res) => {
+
+    // MY BID COLLECTION POST
+    app.post('/mybid', async (req, res) => {
       const data = req.body;
       const result = await mybidCollection.insertOne(data);
       res.send(result);
     })
 
-    app.get('/mybid', async(req, res) => {
+    // MY BID COLLECTION GET
+    app.get('/mybid', async (req, res) => {
+
+      const email = req.query.email;
+      const sellerMail = req.query.sellerMail;
 
       const query = {};
-      const sellerEmail = req.query.sellerEmail;
-      if(sellerEmail){
-        query.sellerEmail = sellerEmail;
+
+      if (email) {
+        query.ByerEmail = email;
       }
+      if (sellerMail) {
+        query.sellerEmail = sellerMail
+      }
+      
       const result = await mybidCollection.find(query).toArray();
       res.send(result);
     })
 
-    app.get('/job', async(req, res) => {
+    // MY BID COLLECTION ID GET
+    app.get('/mybid/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await mybidCollection.findOne(query);
+      res.send(result);
+    })
+
+    // MY BID COLLECTION ID PUT
+    app.put('/mybid/:id', async (req, res) => {
+
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatemybid = req.body;
+
+      const updateData = {
+        $set: {
+          status: updatemybid.status,
+        }
+      }
+      const result = await mybidCollection.updateOne(filter, updateData, options);
+      res.send(result);
+    })
+
+
+
+    app.get('/job', async (req, res) => {
 
       const query = {};
       const email = req.query.email;
-      if(email){
+      if (email) {
         query.email = email;
       }
       const result = await jobCollection.find(query).toArray();
@@ -70,41 +107,41 @@ async function run() {
     })
 
 
-    app.get('/web', async(req, res) => {
-      const query = {jobCategory: "WEB DEVELOPMENT"};
+    app.get('/web', async (req, res) => {
+      const query = { jobCategory: "WEB DEVELOPMENT" };
       const web = jobCollection.find(query);
       const result = await web.toArray();
       res.send(result);
     })
 
-    app.get('/digital', async(req, res) => {
-      const query = {jobCategory: "DIGITAL MARKETING"};
+    app.get('/digital', async (req, res) => {
+      const query = { jobCategory: "DIGITAL MARKETING" };
       const digital = jobCollection.find(query);
       const result = await digital.toArray();
       res.send(result);
     })
 
-    app.get('/graphics', async(req, res) => {
-      const query = {jobCategory: "GRAPHICS DESIGN"};
+    app.get('/graphics', async (req, res) => {
+      const query = { jobCategory: "GRAPHICS DESIGN" };
       const graphics = jobCollection.find(query);
       const result = await graphics.toArray();
       res.send(result);
     })
 
-    app.get('/job/:id', async(req, res) => {
+    app.get('/job/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await jobCollection.findOne(query);
       res.send(result);
     })
 
-    app.put('/job/:id', async(req, res) => {
+    app.put('/job/:id', async (req, res) => {
 
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const options = { upsert: true };
       const updateJob = req.body;
-      
+
       const updateData = {
         $set: {
           email: updateJob.email,
@@ -121,9 +158,9 @@ async function run() {
       res.send(result);
     })
 
-    app.delete('/job/:id', async(req, res) => {
+    app.delete('/job/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await jobCollection.deleteOne(query);
       res.send(result);
     })
