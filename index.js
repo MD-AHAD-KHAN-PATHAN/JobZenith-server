@@ -56,7 +56,7 @@ async function run() {
   try {
 
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const jobCollection = client.db('jobZenith').collection('job');
     const mybidCollection = client.db('jobZenith').collection('myBid');
@@ -106,7 +106,7 @@ async function run() {
     })
 
     // MY BID COLLECTION ID PUT
-    app.put('/mybid/:id', getmen, verifiedToken, async (req, res) => {
+    app.put('/mybid/:id', async (req, res) => {
 
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
@@ -187,7 +187,7 @@ async function run() {
       res.send(result);
     })
 
-    app.delete('/job/:id', getmen, verifiedToken, async (req, res) => {
+    app.delete('/job/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await jobCollection.deleteOne(query);
