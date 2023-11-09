@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 
@@ -10,13 +9,9 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 
-app.use(cors({
-  origin: ['http://localhost:5173'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xwdt30p.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -29,34 +24,12 @@ const client = new MongoClient(uri, {
   }
 });
 
-const getmen = async (req, res, next) => {
-  // console.log('get men called: ', req.method, req.url);
-  next();
-}
-
-const verifiedToken = async (req, res, next) => {
-  const token = req?.cookies?.token;
-
-  if (!token) {
-    return res.status(401).send({ message: 'unauthorized access' })
-  }
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: 'unauthorized access' })
-    }
-    console.log('value in the token', decoded);
-    req.user = decoded;
-    next();
-  })
-
-}
 
 async function run() {
   try {
 
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    await client.connect();
 
     const jobCollection = client.db('jobZenith').collection('job');
     const mybidCollection = client.db('jobZenith').collection('myBid');
@@ -66,7 +39,6 @@ async function run() {
       const result = await jobCollection.insertOne(data);
       res.send(result);
     })
-
 
     // MY BID COLLECTION POST
     app.post('/mybid', async (req, res) => {
@@ -88,15 +60,14 @@ async function run() {
       if (sellerMail) {
         query.sellerEmail = sellerMail;
       }
-
-      
       
       const result = await mybidCollection.find(query).toArray();
       res.send(result);
     })
 
     // MY BID COLLECTION ID GET
-    app.get('/mybid/:id', getmen, verifiedToken, async (req, res) => {
+    // getmen, verifiedToken, 
+    app.get('/mybid/:id', async (req, res) => {
 
       const id = req.params.id;
 
@@ -192,24 +163,6 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await jobCollection.deleteOne(query);
       res.send(result);
-    })
-
-    app.post('/jwt', getmen, async (req, res) => {
-      const user = req.body;
-
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none'
-      })
-      .send({ success: true });
-    })
-
-    app.post('/logout', async(req, res) => {
-      const user = req.body;
-      console.log('logout user : ', user)
-      res.clearCookie('token', {maxAge: 0}).send({success: true})
     })
 
 
